@@ -1,73 +1,102 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const WaterBottle = ({ count, goal }) => {
-  const bottleHeight = 200; // Total height of the bottle
-  const bottleWidth = 80;  // Total width of the bottle
-  const neckHeight = 40;   // Height of the bottle's neck
-  const neckWidth = 40;    // Width of the bottle's neck
-  const capHeight = 15;    // Height of the bottle cap
-  const capWidth = 50;     // Width of the bottle cap
+const WaterBottle = ({ amountDrank, goal }) => {
+  const [bubbles, setBubbles] = useState([]);
 
-  // Calculate the water level as a percentage
-  const fillPercentage = goal > 0 ? Math.min(count / goal, 1) : 0;
-  const waterHeight = fillPercentage * (bottleHeight - neckHeight); // Height of water in the main body
+  const bottleHeight = 200;
+  const bottleWidth = 80;
+  const neckHeight = 40;
+  const capHeight = 15;
+  const fillPercentage = goal > 0 ? Math.min(amountDrank / goal, 1) : 0;
+  const waterHeight = fillPercentage * (bottleHeight - neckHeight);
+
+  // Gera bolhas sempre que amountDrank for alterado
+  useEffect(() => {
+    const newBubbles = Array.from({ length: 5 }, () => ({
+      id: Math.random(),
+      cx: 10 + Math.random() * (bottleWidth - 20),
+      r: 2 + Math.random() * 3,
+    }));
+
+    setBubbles(newBubbles);
+
+    const timer = setTimeout(() => setBubbles([]), 2000);
+    return () => clearTimeout(timer);
+  }, [amountDrank]);
 
   return (
-    <svg width={bottleWidth + 20} height={bottleHeight + capHeight + 20} viewBox={`0 0 ${bottleWidth + 20} ${bottleHeight + capHeight + 20}`}>
-      {/* Bottle Cap */}
+    <svg width={bottleWidth + 20} height={bottleHeight + capHeight + 50}>
+      {/* Cap */}
       <rect
-        x={(bottleWidth - capWidth) / 2 + 10}
+        x={(bottleWidth - 50) / 2 + 10}
         y={10}
-        width={capWidth}
+        width={50}
         height={capHeight}
-        fill="#8B4513" // SaddleBrown
-        rx="5" ry="5" // Rounded corners
-      />
-
-      {/* Bottle Neck */}
-      <rect
-        x={(bottleWidth - neckWidth) / 2 + 10}
-        y={capHeight + 10}
-        width={neckWidth}
-        height={neckHeight}
-        fill="#ADD8E6" // LightBlue - bottle color
+        fill="#8B4513"
         rx="5" ry="5"
       />
 
-      {/* Bottle Body */}
+      {/* Neck */}
+      <rect
+        x={(bottleWidth - 40) / 2 + 10}
+        y={capHeight + 10}
+        width={40}
+        height={neckHeight}
+        fill="#ADD8E6"
+        rx="5" ry="5"
+      />
+
+      {/* Body */}
       <rect
         x={10}
         y={capHeight + neckHeight + 10}
         width={bottleWidth}
         height={bottleHeight - neckHeight}
-        fill="#ADD8E6" // LightBlue - bottle color
+        fill="#ADD8E6"
         rx="10" ry="10"
       />
 
-      {/* Water Fill */}
+      {/* Water */}
       {waterHeight > 0 && (
         <rect
           x={10}
           y={capHeight + neckHeight + 10 + (bottleHeight - neckHeight - waterHeight)}
           width={bottleWidth}
           height={waterHeight}
-          fill="#4682B4" // SteelBlue - water color
-          rx="10" ry="10"
+          fill="#4682B4"
+          rx="10"
+          ry="10"
         />
       )}
 
-      {/* Text for count and goal */}
+      {/* Bolhas animadas */}
+      {bubbles.map(bubble => (
+        <circle
+          key={bubble.id}
+          className="bubble"
+          cx={bubble.cx}
+          cy={capHeight + neckHeight + 10 + (bottleHeight - neckHeight)}
+          r={bubble.r}
+        />
+      ))}
       <text
         x={bottleWidth / 2 + 10}
-        y={bottleHeight + capHeight + 10 + 15} // Position below the bottle
-        fontSize="14"
-        fill="#333"
+        y={bottleHeight + capHeight + 30}
+        fontSize="15"
+        fill="#4A90E2" // Azul moderno (inspirado em design flat)
         textAnchor="middle"
+        fontWeight="600"
+        style={{
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+          fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif",
+          letterSpacing: '0.5px',
+        }}
       >
-        {`${count}/${goal}`}
+        {`${(amountDrank / 1000).toFixed(2)}L / ${(goal / 1000).toFixed(2)}L`}
       </text>
+
     </svg>
   );
 };
 
-export default WaterBottle
+export default WaterBottle;

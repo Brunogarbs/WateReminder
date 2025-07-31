@@ -40,3 +40,21 @@
 .read-the-docs {
   color: #888;
 }
+
+@keyframes bubble-up {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(-150px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.bubble {
+  animation: bubble-up 2s ease-out forwards;
+  fill: #B0E0E6;
+  /* PowderBlue */
+}
